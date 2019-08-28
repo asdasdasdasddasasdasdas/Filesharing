@@ -6,7 +6,7 @@
  </ol>
 
 <h3>Used technologies</h4>
-<h6>Php</h6>
+
 <ol>
      <li>slim/slim: ^3.12</li>
    <li> slim/twig-view: ^2.5</li>
@@ -15,6 +15,7 @@
    <li> symfony/doctrine-bridge: ^4.3</li>
    <li> doctrine/doctrine-bundle": ^1.11</li>
    <li> nesbot/carbon: ^2.23</li>
+  <li> Material design bootstrap</li>
  </ol>
  
  
