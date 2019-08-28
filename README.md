@@ -15,7 +15,7 @@
    <li> symfony/doctrine-bridge: ^4.3</li>
    <li> doctrine/doctrine-bundle": ^1.11</li>
    <li> nesbot/carbon: ^2.23</li>
-  <li> Material design bootstrap</li>
+  <li> Material design bootstrap 4.8.8</li>
  </ol>
  
  
