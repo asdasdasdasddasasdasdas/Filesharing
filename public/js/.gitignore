@@ -1,0 +1,8 @@
+addons
+modules
+bootstrap.js
+bootstrap.min.js
+jquery-3.4.1.min.js
+mdb.js
+mdb.min.js
+popper.min.js

@@ -1,0 +1,151 @@
+{% extends 'Layout/default.twig' %}
+{% block content %}
+
+
+    <div class="wrapper">
+
+        <div class="row">
+            <div class="col-xl-7 col-lg-7 order-sm-2 order-2 order-md-2 order-lg-1 order-xl-1">
+
+                <h1 class="mb-5 mt-3 text-center">Files</h1>
+                <div class="row my-3"><h4>Результатов: {{ paginator.getPaginator().count() }}</h4></div>
+                <div class="row d-flex">
+
+                    {% if paginator.getPaginator().count() %}
+                        <table class="table show-table text-center w-100">
+                            <tr class="border black white-text">
+                                <th>Photo</th>
+                                <th>Name</th>
+                                <th>Size</th>
+                                <th>Date</th>
+
+
+                            </tr>
+                            {% for file in paginator.getPaginator() %}
+
+
+
+                                <tr scope="row">
+                                    <td class=" align-middle">
+                                        <div class="img-view">
+                                            <a href="/show/{{ file.getId() }}"> <img class="img" alt="photo"
+                                                                                     src="{{ file.getImagePath() }}">
+                                            </a>
+                                        </div>
+                                    </td>
+                                    <td class="align-middle wb"><a
+                                                href="/show/{{ file.getId() }}">  {{ file.getName() }} </a></td>
+                                    <td class="align-middle"><a
+                                                href="/show/{{ file.getId() }}"> {{ types.fileSizeConvert(file.getSize()) }}</a>
+                                    </td>
+                                    <td class="align-middle"><a
+                                                href="/show/{{ file.getId() }}"> {{ file.getCreatedAt().diffForHumans("now"|date("m/d/Y H:i:s")) }}</a>
+                                    </td>
+                                    </a>
+                                </tr>
+
+                            {% endfor %}
+                        </table>
+                    {% else %}
+                        <h2> Files not found!</h2>
+                    {% endif %}
+
+
+                </div>
+            </div>
+
+            <div class="ml-1 col-xl-4 col-lg-4 order-sm-1 order-1 order-md-1 order-lg-1 order-xl-2">
+
+                <div class="row">
+                    <form method="get" class="search-form py-3 px-5">
+                        <h1 class="mt-4 text-center mb-5">Search</h1>
+                        <div class="row">
+                            <label for="name">By name:</label>
+                            <input name="search" class="form-control" type="text">
+                        </div>
+
+                        <div class="my-4">
+                            <div>
+                                <input name="sort" value="video" type="radio">
+                                <label for="">Video</label>
+                            </div>
+                            <div>
+                                <input name="sort" value="audio" type="radio">
+                                <label for="">Audio</label>
+                            </div>
+                            <div>
+                                <input name="sort" value="text" type="radio">
+                                <label for="">Text</label>
+                            </div>
+                            <div>
+                                <input name="sort" value="application" type="radio">
+                                <label for="">Application</label>
+                            </div>
+                            <div>
+                                <input name="sort" value="image" type="radio">
+                                <label for="">Image</label>
+
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button class="btn btn-primary">Submit</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        {% if paginator.hasPages() %}
+            <div class="row text-center">
+                <ul class="pagination pg-blue ">
+
+                    {% if paginator.hasPreviousPage() %}
+
+                        <li class="page-item"><a class="page-link"
+                                                 href="?page={{ paginator.getCurrentPage()-1 }}{{ paginator.getLink() }}"><<</a>
+                        </li>
+                        {% for i in 1..paginator.getCurrentPage()-1 %}
+                            {% if paginator.getCurrentPage()-i < 3 %}
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a></li>
+                            {% else %}
+
+
+
+                            {% endif %}
+
+                        {% endfor %}
+                    {% endif %}
+
+
+                    <li class="page-item active"><a class="page-link"
+                                                    href="?page={{ paginator.getCurrentPage() }}{{ paginator.getLink() }}">{{ paginator.getCurrentPage() }}</a>
+                    </li>
+
+
+                    {% if paginator.hasNextPage() %}
+
+                        {% for i in paginator.getCurrentPage()+1..paginator.getPages() %}
+                            {% if i-paginator.getCurrentPage()>2 %}
+                            {% else %}
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a></li>
+
+
+                            {% endif %}
+                        {% endfor %}
+                        <li class="page-item"><a class="page-link"
+                                                 href="?page={{ paginator.getCurrentPage()+1 }}{{ paginator.getLink() }}">>> </a>
+                        </li>
+                    {% endif %}
+
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+
+{% endblock %}
+{% block scripts %}
+
+{% endblock %}

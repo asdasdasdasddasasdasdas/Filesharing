@@ -1,0 +1,58 @@
+{% extends 'Layout/default.twig' %}
+
+
+{% block content %}
+
+    <div class="wrapper">
+        <div class="row d-flex justify-content-center m-auto">
+            <div class="col-xl-3  profile-left ">
+                <div class="avatar-view">
+                    <div class="profile-avatar text-center m-auto">
+                        <img class="profile-avatar-img" height="100" width="100"
+                             src="/{{ user.getAvatarPath() }}" alt="">
+                    </div>
+                </div>
+
+                <div class="profile-name mb-4 text-center ">
+                    <p class="h5"> Name: {{ auth.user.getName() }}</p>
+                </div>
+                <form enctype="multipart/form-data" method="post">
+                    <div class="custom-file-wrapper text-center">
+                        <p> Сменить аватарку</p>
+
+                        <input name="token" type="hidden" value="{{ token }}">
+
+                        <label class="file-upload-label  text-center" id="label-1" for="file-1">
+                    <span class="h6">
+                        Choose file
+                    </span>
+                            <span class="button">Open</span></label>
+                        <input type="hidden" name="MAX_FILE_SIZE" value="838860800"/>
+                        <input id="file-1" class="input-file" name="file" type="file">
+                        <button type="submit" class="btn btn-primary">Change</button>
+
+
+                    </div>
+                </form>
+            </div>
+            <div class="col-xl-8  ml-xl-4  profile-right">
+
+                <h1 class="text-center my-5">Profile</h1>
+                <div class="row ml-5 my-4">
+                    <p class="h5"> Registered at: {{ auth.user.getCreatedAt().format('y/m/d') }}</p>
+
+                </div>
+                <div class="row ml-5 my-4">
+                    <p class="h5"> Email: {{ auth.user.getEmail() }}</p>
+                </div>
+
+                {% for error in errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+ {% block scripts %}
+     <script type="text/javascript" src="/js/upload.js"></script>
+ {% endblock %}

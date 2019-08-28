@@ -1,0 +1,162 @@
+{% extends 'Layout/default.twig' %}
+
+
+{% block content %}
+    <div class="wrapper ">
+        <div class="file-show-form mb-5 ">
+            <h1 class="mb-4 text-center">File</h1>
+            {% autoescape %}
+                {{ types.generateHtmlByFile(file)|raw }}
+            {% endautoescape %}
+
+            <div class="ml-5 mb-4"><p class="h5">Name: {{ file.getName() }}</p></div>
+            <div class="ml-5 mb-4"><p class="h5">Size: {{ types.fileSizeConvert(file.getSize()) }}.</p></div>
+            <div class="ml-5 mb-4"><p class="h5">User:
+                    {% if file.getUser().getName() %}
+                        {{ file.getUser().getName() }}
+                    {% else %}
+                        Anonim
+                    {% endif %}
+
+
+                </p></div>
+            <p class="h5 ml-5">Description:</p>
+            <div class="file-description mb-4">
+                <p>
+                    {% if file.getDescription() %}
+                        {{ file.getDescription() }}
+                    {% else %}
+                        Description not found
+                    {% endif %}
+
+                </p></div>
+            <div class="text-center"><a type="button" class="btn btn-green"
+                                        href="/download/{{ file.getId() }}">Download <i class="fa fa-download"
+                                                                                        aria-hidden="true"></i></a>
+            </div>
+        </div>
+
+        <div class="comments">
+
+            <form id="text" class="comment-form text-center  mb-5" method="post">
+                <h3 class="mt-4">Оставить Коментарий</h3>
+                {% if auth.check %}
+
+                    <input name="user_id" type="hidden" value= {{ auth.user.getId() }}>
+
+                    <div>
+                        <textarea form="text" rows="2" class="comment-form-textarea  mt-4" name="text"
+                                  type="text"></textarea>
+
+                        <button ena type="submit" class="mb-5 btn  ">Send</button>
+
+                    </div>
+                {% else %}
+
+                    <textarea disabled form="text" cols="70" rows="2" class="comment-form-textarea disabled mt-4"
+                              name="text"
+                              type="text"></textarea>
+
+                    <button disabled type="submit" class="mb-5 btn disabled btn-primary ">Send</button><br>
+                    <p>Если хотите оставить комментарий то <a href="/login">зайдите в аккаунт</a> или <a href="/signup">зарегистрируйте
+                            его</a></p>
+                {% endif %}
+                {% for error in errors %}
+                    <li>{{ error.message }}</li>
+                {% endfor %}
+            </form>
+
+            {% for comment in comments %}
+                <div class="comment">
+                    <div class="row">
+                        <div class="col-3 col-sm-2 col-md-2 col-xl-1">
+                            <div class="comment-avatar text-center">
+                                <img class="comment-avatar-img" height="49" width="49"
+                                     src="/{{ comment.getUser().getAvatarPath() }}" alt="">
+                            </div>
+                        </div>
+                        <div class="col-6 col-sm-7 col-md-7 col-xl-9">
+                            <div class="row">
+                                <div class="comment-username">
+
+                                    <p class="h6">  {{ comment.getUser().getName() }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="comment-message">
+                                    {{ comment.getText() }}
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-3">
+                            <div class="comment-data">
+                                {{ comment.getCreatedAt().diffForHumans("now"|date("m/d/Y H:i:s")) }}
+                            </div>
+                            <div class="response">Ответить</div>
+
+                        </div>
+                        <div class="row response-form w-100 d-none">
+
+                            <form class="comment-response-form text-center" method="post">
+                                {% if auth.check %}
+                                    <input name="comment-id" type="hidden" value="{{ comment.getId() }}">
+                                    <input class="comment-answer" type="text" name="comment-answer">
+
+                                    <button class="btn btn-primary" type="submin">go</button>
+                                {% else %}
+                                    <input disabled class="comment-answer" type="text" name="comment-answer">
+
+                                    <button disabled class="btn btn-primary" type="submin">go</button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% if comment.getChildren().count() %}
+                    <div class="responses mb-4">
+                        <p class="show-responses ml-5">Ответы ({{ comment.getChildren().count() }})</p>
+                        <div class=" response-comments d-none">
+                            {% for comment_children in  comment.getChildren() %}
+                                <div class="row mb-3 mx-5">
+                                    <div class="col-4 col-sm-2 col-md-2 col-xl-1">
+                                        <div class="comment-avatar text-center">
+                                            <img class="comment-avatar-img" height="49" width="49"
+                                                 src="/{{ comment_children.getUser().getAvatarPath() }}" alt="">
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-7 col-md-7 col-xl-9">
+                                        <div class="row">
+                                            <div class="comment-username">
+
+                                                <p class="h6">  {{ comment_children.getUser().getName() }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+
+                                            <div class="comment-message">
+                                                {{ comment_children.getText() }}
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-2 col-3">
+                                        <div class="comment-data">
+                                            {{ comment_children.getCreatedAt().diffForHumans("now"|date("m/d/Y H:i:s")) }}
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}
+{% block scripts %}
+    <script type="text/javascript" src="/js/comments.js"></script>
+{% endblock %}

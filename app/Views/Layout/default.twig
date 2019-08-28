@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/master.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <!-- Font Awesome -->
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet"
+          integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <!-- Bootstrap core CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="/css/mdb.min.css" rel="stylesheet">
+    <!-- Your custom styles (optional) -->
+    <link href="/css/style.css" rel="stylesheet">
+    <!-- JQuery -->
+
+    <title>Title</title>
+
+</head>
+
+<body>
+<header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark black">
+        <div class="container">
+            <a class="navbar-brand" href="#"><strong>Filesharing</strong></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/show">Show</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/test">Test</a>
+                    </li>
+                </ul>
+
+
+                <div class="text-white">
+                    {% if auth.check %}
+                    <div class="d-flex">
+                        <div class="header-name py-1 px-4">
+                            <a class="text-white" href="/profile/{{ auth.user.getName() }}"> {{ auth.user.getName }}</a>
+                        </div>
+                        <div class="ml-1 header-angle-down">
+                            <i class="  fa fa-angle-down"></i></div>
+                        <div class="header-dropdown-menu  d-none">
+                            <ul>
+                                <li>Test</li>
+                                <li><a href="/logout">Log out</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    {% else %}
+
+                    <a class="text-white" href="/login">Log in</a> <i class="fa fa-sign-in" aria-hidden="true"></i>
+                </div>
+                <div class="text-white mx-2">or</div>
+                <div class="text-white">
+                    <a class="text-white" href="/signup">Sign up</a> <i class="fa fa-sign-in" aria-hidden="true"></i>
+                </div>
+
+                {% endif %}
+
+            </div>
+        </div>
+    </nav>
+
+</header>
+
+
+{% block content %} {% endblock %}
+
+
+<footer class="footer"></footer>
+<script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
+<!-- Bootstrap tooltips -->
+<script type="text/javascript" src="/js/popper.min.js"></script>
+<!-- Bootstrap core JavaScript -->
+<script type="text/javascript" src="/js/bootstrap.min.js"></script>
+<!-- MDB core JavaScript -->
+<script type="text/javascript" src="/js/mdb.min.js"></script>
+
+<script type="text/javascript" src="/js/script.js"></script>
+{% block scripts %} {% endblock %}
+</body>
+</html>

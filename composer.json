@@ -1,0 +1,16 @@
+{
+  "autoload": {
+    "psr-4": {
+      "Filesharing\\": "app/"
+    }
+  },
+  "require": {
+    "slim/slim": "^3.12",
+    "slim/twig-view": "^2.5",
+    "doctrine/orm": "^2.6",
+    "symfony/validator": "^4.3",
+    "symfony/doctrine-bridge": "^4.3",
+    "doctrine/doctrine-bundle": "^1.11",
+    "nesbot/carbon": "^2.23"
+  }
+}
