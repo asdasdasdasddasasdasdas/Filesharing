@@ -14,11 +14,11 @@ $isDevMode = true;
 $config = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array('app/Entity'), $isDevMode);
 
 $connection = array(
-    "dbname" => "filesharing",
-    "user" => "root",
+    "dbname" => "",
+    "user" => "",
     "password" => "",
-    "host" => "localhost",
-    "driver" => "pdo_mysql");
+    "host" => "",
+    "driver" => "");
 
 $configuration = [
     'settings' => [
