@@ -1,8 +1,8 @@
 <?php
 return array(
-    "dbname" => "filesharing",
-    "user" => "root",
+    "dbname" => "",
+    "user" => "",
     "password" => "",
-    "host" => "localhost",
-    "driver" => "pdo_mysql"
+    "host" => "",
+    "driver" => ""
 );
