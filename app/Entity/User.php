@@ -37,6 +37,7 @@ class User
     protected $id;
     /**
      * @Assert\NotBlank(message="Name cannot be not blank")
+     * @Assert\Length(max = 20, maxMessage="Name too long")
      * @Column(type="string", length =20, unique=true)
      */
     public $name;

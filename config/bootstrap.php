@@ -17,6 +17,7 @@ use \Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use \Filesharing\Services\CsrfService;
 use \Filesharing\Services\Helper;
 use \Slim\Http\Request;
+use \Filesharing\Middleware\AuthMiddleware;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 $isDevMode = true;
@@ -81,8 +82,8 @@ $container[Twig::class] = function (Container $container) {
     return $view;
 };
 
-$container['AuthMiddleware'] = function (Container $container) {
-    return new \Filesharing\Middleware\AuthMiddleware($container->get(AuthService::class));
+$container[AuthMiddleware::class] = function (Container $container) {
+    return new AuthMiddleware($container->get(AuthService::class));
 
 };
 $container['notFoundHandler'] = function (Container $container) {
