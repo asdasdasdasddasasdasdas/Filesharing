@@ -45,10 +45,10 @@ class CsrfService
 
     public function checkToken($request)
     {
-        $ptoken = is_null($request->getParsedBodyParam('token')) ? '' : $request->getParsedBodyParam('token');
-        $ctoken = is_null($request->getCookieParam('token')) ? '' : $request->getCookieParam('token');
-        return $this->validator->validate($ptoken, new EqualTo([
-            'value' => $ctoken,
+        $postToken = is_null($request->getParsedBodyParam('token')) ? '' : $request->getParsedBodyParam('token');
+        $cookieToken = is_null($request->getCookieParam('token')) ? '' : $request->getCookieParam('token');
+        return $this->validator->validate($postToken, new EqualTo([
+            'value' => $cookieToken,
             'message' => "Error"
         ]));
     }

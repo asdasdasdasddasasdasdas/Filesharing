@@ -26,7 +26,7 @@ class User
 
 
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Error")
      * @Column(type="string")
      */
     protected $hash;
@@ -36,7 +36,7 @@ class User
      */
     protected $id;
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Name cannot be not blank")
      * @Column(type="string", length =20, unique=true)
      */
     public $name;
@@ -44,13 +44,13 @@ class User
      *
      *
      * @Assert\Email
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Email cannot be not blank")
      * @Column(type="string", unique=true)
      */
     protected $email;
     /**
      *
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Password cannot be not blank")
      * @Assert\Length(
      *     min=5,
      *     minMessage="Your password is too short",
@@ -60,7 +60,7 @@ class User
     protected $password;
 
     /**
-     * @Assert\NotBlank
+     * @Assert\NotBlank(message="Error")
      *    * @Column(type="datetime")
      */
     protected $created_at;

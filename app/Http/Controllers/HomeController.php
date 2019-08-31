@@ -10,9 +10,14 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 use Filesharing\Entity\Comment;
 use Filesharing\Entity\File;
 use Filesharing\Entity\User;
+use Filesharing\Services\AuthService;
+use Filesharing\Services\CsrfService;
+use Filesharing\Services\Helper;
 use Slim\Http\Request;
 use Slim\Http\Response;
+use Slim\Views\Twig;
 use Symfony\Component\Validator\Constraints\EqualTo;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 
 class HomeController
@@ -32,22 +37,31 @@ class HomeController
     /**
      * @var
      */
-    protected $types;
+    protected $helper;
 
     protected $csrf;
 
 
-    public function __construct($container, EntityManager $em)
+    public function __construct(
+        CsrfService $csrf,
+        AuthService $auth,
+        RecursiveValidator $validator,
+        EntityManager $em,
+        Twig $view,
+        Helper $helper
+    )
     {
-        $this->validator = $container->get('validator');
-        $this->csrf = $container->get('csrf');
+
+        $this->csrf = $csrf;
+        $this->auth = $auth;
+        $this->validator = $validator;
         $this->em = $em;
-        $this->view = $container->get('view');
-        $this->types = $container->get('types');
-        $this->auth = $container->get('auth');
+        $this->view = $view;
+        $this->helper = $helper;
+
     }
 
-    public function download($request, $response, $args)
+    public function download(Request $request, Response $response, $args)
     {
         $file = $this->em->getRepository(File::class)->findOneBy(['id' => $args['id']]);
         $response = $response->withHeader("Content-Type", $file->getType())
@@ -59,32 +73,28 @@ class HomeController
         return $response;
     }
 
-    public function home($request, $response, $args)
+    public function home(Request $request, Response $response, $args)
     {
 
         $response = $this->csrf->setCookieToken($response, $request->getCookieParam('token'));
         $token = $this->csrf->getToken();
         if ($request->getUploadedFiles()) {
-
-
             $uploadedFiles = $request->getUploadedFiles()['file'];
-
-
             foreach ($uploadedFiles as $uploadedFile) {
+
                 $slug = bin2hex(random_bytes(20));
 
                 $path = 'uploads/' . $slug . $uploadedFile->getClientFilename();
 
                 $file = new File();
 
-                $imgPath = $this->types->getImagePath($uploadedFile->getClientMediaType());
+                $imgPath = $this->helper->getImagePath($uploadedFile->getClientMediaType());
 
                 if ($imgPath) {
                     $file->setImagePath($imgPath);
                 } else {
                     $file->setImagePath('/' . $path);
                 }
-
 
                 $file->setName($uploadedFile->getClientFilename());
                 $file->setSize($uploadedFile->getSize());
@@ -108,18 +118,15 @@ class HomeController
                     return $this->view->render($response, 'home.twig', ['errors' => $errors ?? '', 'token' => $token]);
                 }
             }
-
             $this->em->flush();
             return $response->withRedirect('/show', 303);
-
         }
-
-        return $this->view->render($response, 'home.twig', ['errors' => $errors ?? '', 'token' => $token]);
+        return $this->view->render($response, 'home.twig', ['errors' => $errors ?? '', 'token' => $this->csrf->getToken()]);
 
     }
 
 
-    public function showFiles(Request $request, $response, $args)
+    public function showFiles(Request $request, Response $response, $args)
     {
         $currentPage = is_null($request->getQueryParam("page")) || $request->getQueryParam("page") < 1 ? 1 : intval($request->getQueryParam('page'));
         $paginator = new \Filesharing\Pagination\Paginator($this->em);
@@ -127,13 +134,13 @@ class HomeController
 
         return $this->view->render($response, 'show.twig', [
             'paginator' => $paginator,
-            'types' => $this->types
+            'helper' => $this->helper
 
         ]);
     }
 
 
-    public function show(Request $request, $response, $args)
+    public function show(Request $request, Response $response, $args)
     {
 
 
@@ -152,16 +159,18 @@ class HomeController
                 $answer->setCreatedAt(Carbon::now());
                 $answer->setText($request->getParsedBodyParam('comment-answer'));
                 $answer->setUser($this->auth->getAuthUser($request->getCookieParam('hash')));
+                $errors = $this->validator->validate($answer);
+                if (0 == count($errors)) {
+                    $answer->setParent($comment);
+                    $comment->setFile($file);
+                    $file->setComments($comment);
+                    $this->em->persist($comment);
+                    $this->em->persist($answer);
+                    $this->em->persist($file);
 
-                $answer->setParent($comment);
-                $comment->setFile($file);
-                $file->setComments($comment);
-                $this->em->persist($comment);
-                $this->em->persist($answer);
-                $this->em->persist($file);
-
-                $this->em->flush();
-                return $response->withRedirect("/show/{$args['id']}", 303);
+                    $this->em->flush();
+                    return $response->withRedirect("/show/{$args['id']}", 303);
+                }
             }
 
 
@@ -189,7 +198,7 @@ class HomeController
         }
         return $this->view->render($response, 'file.twig', [
             "file" => $file,
-            'types' => $this->types,
+            'helper' => $this->helper,
             'comments' => $file->getComments()->matching($criteria),
             'errors' => $errors ?? ''
         ]);

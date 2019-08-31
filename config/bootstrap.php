@@ -3,22 +3,26 @@
 
 use Composer\Autoload\ClassLoader;
 use Doctrine\Common\Annotations\AnnotationRegistry;
-use Filesharing\Http\Controllers\AuthController;
+use \Filesharing\Http\Controllers\ProfileController;
 use Filesharing\Http\Controllers\HomeController;
+use Filesharing\Http\Controllers\AuthController;
 use Filesharing\Services\AuthService;
 use Slim\Views\Twig;
 use Symfony\Component\Validator\Validation;
+use \Slim\Container;
+use \Doctrine\ORM\EntityManager;
+use \Doctrine\Bundle\DoctrineBundle\Registry;
+use \Filesharing\ConstraintValidatorFactory;
+use \Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
+use \Filesharing\Services\CsrfService;
+use \Filesharing\Services\Helper;
+use \Slim\Http\Request;
 
-$loader = require __DIR__.'/../vendor/autoload.php';
+$loader = require __DIR__ . '/../vendor/autoload.php';
 $isDevMode = true;
 $config = \Doctrine\ORM\Tools\Setup::createAnnotationMetadataConfiguration(array('app/Entity'), $isDevMode);
 
-$connection = array(
-    "dbname" => "",
-    "user" => "",
-    "password" => "",
-    "host" => "",
-    "driver" => "");
+$connection = require 'connection.php';
 
 $configuration = [
     'settings' => [
@@ -27,26 +31,26 @@ $configuration = [
 ];
 
 
-$container = new \Slim\Container($configuration);
-$em = \Doctrine\ORM\EntityManager::create($connection, $config);
-$registry = new \Doctrine\Bundle\DoctrineBundle\Registry($container, $connection, ['em'], '', '');
-$factory = new \Filesharing\ConstraintValidatorFactory();
-$factory->addValidator('doctrine.orm.validator.unique', new \Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator($registry));
+$container = new Container($configuration);
+$em = EntityManager::create($connection, $config);
+$registry = new Registry($container, $connection, [EntityManager::class], '', '');
+$factory = new ConstraintValidatorFactory();
+$factory->addValidator('doctrine.orm.validator.unique', new UniqueEntityValidator($registry));
 
 
-$container['em'] = function ($container) use ($em) {
+$container[EntityManager::class] = function (Container $container) use ($em) {
 
     return $em;
 };
-$container['auth'] = function ($container) {
+$container[AuthService::class] = function (Container $container) {
 
-    return new AuthService($container->em);
+    return new AuthService($container->get(EntityManager::class));
 };
-$container['types'] = function ($container) {
+$container[Helper::class] = function ($container) {
 
-    return new \Filesharing\Services\Helper();
+    return new Helper();
 };
-$container['validator'] = function ($container) use ($factory) {
+$container[Validation::class] = function (Container $container) use ($factory) {
     $builder = Validation::createValidatorBuilder();
     $builder->setConstraintValidatorFactory($factory);
     $builder->enableAnnotationMapping();
@@ -56,13 +60,13 @@ $container['validator'] = function ($container) use ($factory) {
 
     return $validator;
 };
-$container['csrf'] = function ($container) {
+$container[CsrfService::class] = function (Container $container) {
 
-    return new \Filesharing\Services\CsrfService($container->validator);
+    return new CsrfService($container->get(Validation::class));
 };
 
 
-$container['view'] = function ($container) {
+$container[Twig::class] = function (Container $container) {
 
 
     $view = new Twig('../app/Views', [
@@ -70,31 +74,50 @@ $container['view'] = function ($container) {
     ]);
 
     $view->getEnvironment()->addGlobal('auth', [
-        'check' => $container->auth->isLoggedIn($container->request->getCookieParam('hash')),
-        'user' => $container->auth->getAuthUser($container->request->getCookieParam('hash')),
+        'check' => $container->get(AuthService::class)->isLoggedIn($container->request->getCookieParam('hash')),
+        'user' => $container->get(AuthService::class)->getAuthUser($container->request->getCookieParam('hash')),
     ]);
 
     return $view;
 };
 
-$container['AuthMiddleware'] = function ($container) {
-    return new \Filesharing\Middleware\AuthMiddleware($container->auth);
+$container['AuthMiddleware'] = function (Container $container) {
+    return new \Filesharing\Middleware\AuthMiddleware($container->get(AuthService::class));
 
 };
-$container['notFoundHandler'] = function ($container) {
-    return function (\Slim\Http\Request $request, $response) use ($container) {
+$container['notFoundHandler'] = function (Container $container) {
+    return function (Request $request, $response) use ($container) {
 
-        return $container->view->render($response->withStatus(404), "404.twig", ['path' => $request->getRequestTarget()]);
+        return $container->get(Twig::class)->render($response->withStatus(404), "404.twig", ['path' => $request->getRequestTarget()]);
     };
 };
-$container['HomeController'] = function ($container) {
-    return new HomeController($container, $container->em);
+$container[HomeController::class] = function (Container $container) {
+    return new HomeController(
+        $container->get(CsrfService::class),
+        $container->get(AuthService::class),
+        $container->get(Validation::class),
+        $container->get(EntityManager::class),
+        $container->get(Twig::class),
+        $container->get(Helper::class)
+    );
 };
-$container['AuthController'] = function ($container) {
-    return new AuthController($container);
+$container[AuthController::class] = function (Container $container) {
+    return new AuthController(
+        $container->get(CsrfService::class),
+        $container->get(AuthService::class),
+        $container->get(Validation::class),
+        $container->get(EntityManager::class),
+        $container->get(Twig::class)
+    );
 };
-$container['ProfileController'] = function ($container) {
-    return new \Filesharing\Http\Controllers\ProfileController($container);
+$container[ProfileController::class] = function (Container $container) {
+    return new ProfileController(
+        $container->get(CsrfService::class),
+        $container->get(AuthService::class),
+        $container->get(Validation::class),
+        $container->get(EntityManager::class),
+        $container->get(Twig::class)
+    );
 };
 
 

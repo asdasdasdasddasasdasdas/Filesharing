@@ -36,19 +36,13 @@ class File
     protected $id;
     /**
      *
-     * @Assert\NotNull
      * @Column(type="integer")
      **/
     protected $size;
 
 
     /**
-     * @Assert\NotBlank
-     * @Assert\NotNull
-     * @Assert\Length(
-     *     max = 40,
-     *     maxMessage = "Name cannot be longer than {{ limit }} characters"
-     * )
+     * @Assert\NotBlank(message="Filename cannot be not blank")
      * @Column(type="string", length=40)
      */
 
@@ -56,8 +50,8 @@ class File
     /**
      *
      *
-     * @Assert\NotBlank
-     * @Column(type="string")  *
+     *
+     * @Column(type="string")
      **/
     protected $type;
 
@@ -65,7 +59,7 @@ class File
      *
      * @Assert\Length(
      *     max = 170,
-     *     maxMessage = "Your first name cannot be longer than {{ limit }} characters"
+     *     maxMessage = "Description name cannot be longer than {{ limit }} characters"
      * )
      * @Column(type="string", length=170,nullable=true)
      */
@@ -73,7 +67,7 @@ class File
     protected $description = '';
 
     /**
-     * @Assert\NotBlank
+     *
      * @Column(type="datetime")
      */
     protected $created_at = '';
@@ -87,7 +81,7 @@ class File
      */
     protected $user = null;
     /**
-     * @Assert\NotBlank
+     *
      * @Column(type="string")
      */
     protected $public_path;

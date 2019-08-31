@@ -3,24 +3,42 @@
 
 namespace Filesharing\Http\Controllers;
 
+use Doctrine\ORM\EntityManager;
 use Filesharing\Entity\User;
+use Filesharing\Services\AuthService;
+use Filesharing\Services\CsrfService;
 use Slim\Http\Request;
+use Slim\Http\Response;
+use Slim\Views\Twig;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 
 class ProfileController
 {
-    public function __construct($container)
+    protected $auth;
+    protected $validator;
+    protected $view;
+    protected $em;
+    protected $csrf;
+
+    public function __construct(
+        CsrfService $csrf,
+        AuthService $auth,
+        RecursiveValidator $validator,
+        EntityManager $em,
+        Twig $view
+    )
     {
-        $this->csrf = $container->get('csrf');
-        $this->auth = $container->get('auth');
-        $this->validator = $container->get('validator');
-        $this->em = $container->get('em');
-        $this->view = $container->get('view');
+        $this->csrf = $csrf;
+        $this->auth = $auth;
+        $this->validator = $validator;
+        $this->em = $em;
+        $this->view = $view;
     }
 
-    public function profileShow(Request $request, $response, $args)
+    public function profileShow(Request $request, Response $response, $args)
     {
         $user = $this->em->getRepository(User::class)->findOneBy(['name' => $args['name']]);
 

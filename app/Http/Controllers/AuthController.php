@@ -4,13 +4,17 @@
 namespace Filesharing\Http\Controllers;
 
 use Carbon\Carbon;
-use Filesharing\Entity\Role;
+use Doctrine\ORM\EntityManager;
 use Filesharing\Entity\User;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Filesharing\Services\AuthService;
+use Filesharing\Services\CsrfService;
+use Slim\Http\Request;
+use Slim\Http\Response;
+use Slim\Views\Twig;
 use Symfony\Component\Validator\Constraints\Email;
-use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\EqualTo;
+use Symfony\Component\Validator\Constraints\NotNull;
+use Symfony\Component\Validator\Validator\RecursiveValidator;
 
 class AuthController
 {
@@ -26,16 +30,22 @@ class AuthController
      * @param $view
      * @param $em
      */
-    public function __construct($container)
+    public function __construct(
+        CsrfService $csrf,
+        AuthService $auth,
+        RecursiveValidator $validator,
+        EntityManager $em,
+        Twig $view
+    )
     {
-        $this->csrf = $container->get('csrf');
-        $this->auth = $container->get('auth');
-        $this->validator = $container->get('validator');
-        $this->em = $container->get('em');
-        $this->view = $container->get('view');
+        $this->csrf = $csrf;
+        $this->auth = $auth;
+        $this->validator = $validator;
+        $this->em = $em;
+        $this->view = $view;
     }
 
-    public function signUp($request, $response, $args)
+    public function signUp(Request $request, Response $response, $args)
     {
 
         $this->csrf->setCookieToken($response, $request->getCookieParam('token'));
@@ -48,12 +58,14 @@ class AuthController
 
             $user->setName($request->getParsedBodyParam('name'));
             $user->setEmail($request->getParsedBodyParam('email'));
-            $user->setPassword(md5($request->getParsedBodyParam('password')));
+            $user->setPassword($request->getParsedBodyParam('password'));
             $user->setCreatedAt(Carbon::now());
             $user->setHash($hash);
             $user->setAvatarPath('img/user.png');
             $errors = $this->validator->validate($user);
+            $errors->addAll($this->csrf->checkToken($request));
             if (0 == count($errors)) {
+                $user->setPassword(md5($request->getParsedBodyParam('password')));
                 $response = $this->auth->authUser($hash, $response);
 
                 $this->em->persist($user);
@@ -68,7 +80,7 @@ class AuthController
         ]);
     }
 
-    public function login($request, $response, $args)
+    public function login(Request $request, Response $response, $args)
     {
 
         $response = $this->csrf->setCookieToken($response, $request->getCookieParam('token'));
@@ -80,19 +92,19 @@ class AuthController
                 new NotBlank(["message" => "Email must be not blank"]),
                 new Email()]);
 
-            $errors->addAll($this->validator->validate(md5($request->getParsedBodyParam('password')), [
+            $errors->addAll($this->validator->validate($request->getParsedBodyParam('password'), [
                 new NotBlank(["message" => "Password must be not blank"])
             ]));
-            $ptoken = is_null($request->getParsedBodyParam('token')) ? '' : $request->getParsedBodyParam('token');
-            $ctoken = is_null($request->getCookieParam('token')) ? '' : $request->getCookieParam('token');
-
-            $errors->addAll($this->validator->validate($ptoken, new EqualTo(['value' => $ctoken])));
+            $errors->addAll($this->csrf->checkToken($request));
             if (0 == count($errors)) {
                 $user = $repository->findOneBy([
                     'email' => $request->getParsedBodyParam('email'),
-                    'password' => $request->getParsedBodyParam('password')
+                    'password' => md5($request->getParsedBodyParam('password'))
                 ]);
-                d($user);
+
+                $errors->addAll($this->validator->validate($user, new NotNull(["message" => "
+Email or password is incorrect
+"])));
                 if ($user) {
                     $response = $this->auth->authUser($user->getHash(), $response);
                     return $response->withRedirect("/profile/{$user->getName()}", 303);
@@ -105,9 +117,8 @@ class AuthController
         ]);
     }
 
-    public function logout($request, $response, $args)
+    public function logout(Request $request, Response $response, $args)
     {
-
         $response = $this->auth->logoutUser($request->getCookieParam('hash'), $response);
         return $response->withRedirect('/', 303);
     }

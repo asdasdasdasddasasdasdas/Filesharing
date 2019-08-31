@@ -34,12 +34,13 @@
 
                 </div>
 
+
                 <div>
                     <button class="black text-white btn btn-block">Login</button>
                 </div>
                 <input name="token" type="hidden" value="{{ token }}">
                 {% for error in errors %}
-                    <li>{{ error.message }}</li>
+                    <p class="text-danger">{{ error.message }}</p>
                 {% endfor %}
             </div>
 

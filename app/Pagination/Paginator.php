@@ -59,7 +59,6 @@ class Paginator
         $query = $query->setFirstResult(($currentPage - 1) * $limit)->setMaxResults($limit);
 
 
-
         $this->currentPage = $currentPage;
         $this->pages = $pages;
 
