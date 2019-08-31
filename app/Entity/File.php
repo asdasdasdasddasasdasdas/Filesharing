@@ -43,7 +43,7 @@ class File
 
     /**
      * @Assert\NotBlank(message="Filename cannot be not blank")
-     * @Column(type="string", length=40)
+     * @Column(type="string")
      */
 
     protected $name;
