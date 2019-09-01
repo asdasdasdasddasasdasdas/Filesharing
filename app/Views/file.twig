@@ -9,9 +9,9 @@
                 {{ helper.generateHtmlByFile(file)|raw }}
             {% endautoescape %}
 
-            <div class="ml-5 mb-4"><p class="h5">Name: {{ file.getName() }}</p></div>
-            <div class="ml-5 mb-4"><p class="h5">Size: {{ helper.fileSizeConvert(file.getSize()) }}.</p></div>
-            <div class="ml-5 mb-4"><p class="h5">User:
+            <div class="ml-5 mb-4"><p class="h5 wb">Name: {{ file.getName() }}</p></div>
+            <div class="ml-5 mb-4"><p class="h5 wb">Size: {{ converter.fileSizeConvert(file.getSize()) }}.</p></div>
+            <div class="ml-5 mb-4"><p class="h5 wb">User:
                     {% if file.getUser().getName() %}
                         {{ file.getUser().getName() }}
                     {% else %}

@@ -15,9 +15,10 @@ use \Doctrine\Bundle\DoctrineBundle\Registry;
 use \Filesharing\ConstraintValidatorFactory;
 use \Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntityValidator;
 use \Filesharing\Services\CsrfService;
-use \Filesharing\Services\Helper;
 use \Slim\Http\Request;
+use Filesharing\Helper\Helper;
 use \Filesharing\Middleware\AuthMiddleware;
+use \Filesharing\Helper\FileSizeConverter;
 
 $loader = require __DIR__ . '/../vendor/autoload.php';
 $isDevMode = true;
@@ -38,6 +39,9 @@ $registry = new Registry($container, $connection, [EntityManager::class], '', ''
 $factory = new ConstraintValidatorFactory();
 $factory->addValidator('doctrine.orm.validator.unique', new UniqueEntityValidator($registry));
 
+$container[FileSizeConverter::class] = function (Container $container) {
+    return new FileSizeConverter();
+};
 
 $container[EntityManager::class] = function (Container $container) use ($em) {
 
@@ -77,7 +81,13 @@ $container[Twig::class] = function (Container $container) {
     $view->getEnvironment()->addGlobal('auth', [
         'check' => $container->get(AuthService::class)->isLoggedIn($container->request->getCookieParam('hash')),
         'user' => $container->get(AuthService::class)->getAuthUser($container->request->getCookieParam('hash')),
+
     ]);
+
+    $view->getEnvironment()->addGlobal('converter',
+        $container->get(FileSizeConverter::class)
+
+    );
 
     return $view;
 };

@@ -36,7 +36,7 @@
                                     <td class="align-middle wb"><a
                                                 href="/show/{{ file.getId() }}">  {{ file.getName() }} </a></td>
                                     <td class="align-middle"><a
-                                                href="/show/{{ file.getId() }}"> {{ helper.fileSizeConvert(file.getSize()) }}</a>
+                                                href="/show/{{ file.getId() }}"> {{ converter.fileSizeConvert(file.getSize()) }}</a>
                                     </td>
                                     <td class="align-middle"><a
                                                 href="/show/{{ file.getId() }}"> {{ file.getCreatedAt().diffForHumans("now"|date("m/d/Y H:i:s")) }}</a>

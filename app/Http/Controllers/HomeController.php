@@ -12,7 +12,7 @@ use Filesharing\Entity\File;
 use Filesharing\Entity\User;
 use Filesharing\Services\AuthService;
 use Filesharing\Services\CsrfService;
-use Filesharing\Services\Helper;
+use Filesharing\Helper\Helper;
 use Slim\Http\Request;
 use Slim\Http\Response;
 use Slim\Views\Twig;
@@ -82,7 +82,7 @@ class HomeController
             $uploadedFiles = $request->getUploadedFiles()['file'];
             foreach ($uploadedFiles as $uploadedFile) {
 
-                $slug = bin2hex(random_bytes(20));
+                $slug = bin2hex(random_bytes(10));
 
                 $path = 'uploads/' . $slug . $uploadedFile->getClientFilename();
 

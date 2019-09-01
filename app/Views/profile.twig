@@ -14,7 +14,7 @@
                 </div>
 
                 <div class="profile-name mb-4 text-center ">
-                    <p class="h5"> Name: {{ auth.user.getName() }}</p>
+                    <p class="h5 wb"> Name: {{ auth.user.getName() }}</p>
                 </div>
                 <form enctype="multipart/form-data" method="post">
                     <div class="custom-file-wrapper text-center">
@@ -40,10 +40,11 @@
                 <h1 class="text-center my-5">Profile</h1>
                 <div class="row ml-5 my-4">
                     <p class="h5"> Registered at: {{ auth.user.getCreatedAt().format('y/m/d') }}</p>
+                    ;
 
                 </div>
                 <div class="row ml-5 my-4">
-                    <p class="h5"> Email: {{ auth.user.getEmail() }}</p>
+                    <p class="h5 wb"> Email: {{ auth.user.getEmail() }}</p>
                 </div>
 
                 {% for error in errors %}
