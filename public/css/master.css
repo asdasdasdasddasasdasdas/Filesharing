@@ -308,7 +308,6 @@ textarea:focus, input:focus {
         margin: 0;
         padding: 0;
     }
-
     .comment-form-textarea {
         width: 80%;
     }
@@ -370,6 +369,15 @@ textarea:focus, input:focus {
 }
 
 @media (max-width: 540px) {
+    .file-show-img {
+
+        max-width: 100%;
+        max-height: 300px;
+        margin: auto;
+    }
+    .audio-file{
+        width: 100%;
+    }
     .container-fluid {
         margin: 0;
         padding: 0;
@@ -377,6 +385,7 @@ textarea:focus, input:focus {
 
     .wrapper {
         margin: 0;
+        padding: 20px;
     }
 
 }
