@@ -12,6 +12,7 @@ $(document).ready(function () {
 
         e.preventDefault();
         fd.append('description', $(".description").val())
+        $('#dropzone-submit').attr('disabled', true)
         f(fd)
 
     });
@@ -48,8 +49,9 @@ $(document).ready(function () {
         files = [...files];
 
         for (i = 0; i < files.length; i++) {
+
             if (files[i].type == '') {
-                alert("Нельзя загружать папки");
+                alert("Недопустимый тип файла");
                 return;
             }
             if (fd.getAll('file[]').length >= 20) {
@@ -90,7 +92,7 @@ $(document).ready(function () {
     function getSrc(file) {
         let src = file.type;
 
-        console.log(src)
+
         src = src.split('/')[0];
 
         switch (src) {
@@ -119,10 +121,12 @@ $(document).ready(function () {
             url: "/",
             type: "POST",
             data: files,
-            success: function (response) {
-                $('#dropzone-submit').attr('disabled', true)
-                window.location = '/show'
+            beforeSend: function () {
 
+            },
+            success: function (response) {
+
+                window.location = '/show'
             },
             error: function (errorThrown) {
 
