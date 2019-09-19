@@ -50,7 +50,55 @@
                         <h2> Files not found!</h2>
                     {% endif %}
 
+                    {% if paginator.hasPages() %}
+                            <div class="row mt-2 w-100">
+                                <ul class="pagination pg-blue m-auto">
 
+                                    {% if paginator.hasPreviousPage() %}
+
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="?page={{ paginator.getCurrentPage()-1 }}{{ paginator.getLink() }}"><<</a>
+                                        </li>
+                                        {% for i in 1..paginator.getCurrentPage()-1 %}
+                                            {% if paginator.getCurrentPage()-i < 3 %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a>
+                                                </li>
+                                            {% else %}
+
+
+
+                                            {% endif %}
+
+                                        {% endfor %}
+                                    {% endif %}
+
+
+                                    <li class="page-item active"><a class="page-link"
+                                                                    href="?page={{ paginator.getCurrentPage() }}{{ paginator.getLink() }}">{{ paginator.getCurrentPage() }}</a>
+                                    </li>
+
+
+                                    {% if paginator.hasNextPage() %}
+
+                                        {% for i in paginator.getCurrentPage()+1..paginator.getPages() %}
+                                            {% if i-paginator.getCurrentPage()>2 %}
+                                            {% else %}
+                                                <li class="page-item"><a class="page-link"
+                                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a>
+                                                </li>
+
+
+                                            {% endif %}
+                                        {% endfor %}
+                                        <li class="page-item"><a class="page-link"
+                                                                 href="?page={{ paginator.getCurrentPage()+1 }}{{ paginator.getLink() }}">>> </a>
+                                        </li>
+                                    {% endif %}
+
+                                </ul>
+                            </div>
+                        {% endif %}
                 </div>
             </div>
 
@@ -96,53 +144,6 @@
                 </div>
             </div>
         </div>
-        {% if paginator.hasPages() %}
-            <div class="row text-center">
-                <ul class="pagination pg-blue ">
-
-                    {% if paginator.hasPreviousPage() %}
-
-                        <li class="page-item"><a class="page-link"
-                                                 href="?page={{ paginator.getCurrentPage()-1 }}{{ paginator.getLink() }}"><<</a>
-                        </li>
-                        {% for i in 1..paginator.getCurrentPage()-1 %}
-                            {% if paginator.getCurrentPage()-i < 3 %}
-                                <li class="page-item"><a class="page-link"
-                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a></li>
-                            {% else %}
-
-
-
-                            {% endif %}
-
-                        {% endfor %}
-                    {% endif %}
-
-
-                    <li class="page-item active"><a class="page-link"
-                                                    href="?page={{ paginator.getCurrentPage() }}{{ paginator.getLink() }}">{{ paginator.getCurrentPage() }}</a>
-                    </li>
-
-
-                    {% if paginator.hasNextPage() %}
-
-                        {% for i in paginator.getCurrentPage()+1..paginator.getPages() %}
-                            {% if i-paginator.getCurrentPage()>2 %}
-                            {% else %}
-                                <li class="page-item"><a class="page-link"
-                                                         href="?page={{ i }}{{ paginator.getLink() }}">{{ i }}</a></li>
-
-
-                            {% endif %}
-                        {% endfor %}
-                        <li class="page-item"><a class="page-link"
-                                                 href="?page={{ paginator.getCurrentPage()+1 }}{{ paginator.getLink() }}">>> </a>
-                        </li>
-                    {% endif %}
-
-                </ul>
-            </div>
-        {% endif %}
     </div>
 
 {% endblock %}

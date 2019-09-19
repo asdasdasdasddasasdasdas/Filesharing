@@ -20,7 +20,7 @@
 
 
                 </p></div>
-            <p class="h5 ml-5">Description:</p>
+          <div class="ml-5 mb-4">  <p  class="h5 wb">Description:</p></div>
             <div class="file-description mb-4">
                 <p>
                     {% if file.getDescription() %}
@@ -69,13 +69,13 @@
             {% for comment in comments %}
                 <div class="comment">
                     <div class="row">
-                        <div class="col-3 col-sm-2 col-md-2 col-xl-1">
+                        <div class="col-4 col-sm-3 col-md-2 col-xl-1">
                             <div class="comment-avatar text-center">
                                 <img class="comment-avatar-img" height="49" width="49"
                                      src="/{{ comment.getUser().getAvatarPath() }}" alt="">
                             </div>
                         </div>
-                        <div class="col-6 col-sm-7 col-md-7 col-xl-9">
+                        <div class="col-5 col-sm-6 col-md-7 col-xl-9">
                             <div class="row">
                                 <div class="comment-username">
 
@@ -93,9 +93,10 @@
                             <div class="comment-data">
                                 {{ comment.getCreatedAt().diffForHumans("now"|date("m/d/Y H:i:s")) }}
                             </div>
-                            <div class="response">Ответить</div>
+
 
                         </div>
+                        <div class="response ml-3 mt-3">Ответить</div>
                         <div class="row response-form w-100 d-none">
 
                             <form class="comment-response-form text-center" method="post">
@@ -119,13 +120,13 @@
                         <div class=" response-comments d-none">
                             {% for comment_children in  comment.getChildren() %}
                                 <div class="row mb-3 mx-5">
-                                    <div class="col-4 col-sm-2 col-md-2 col-xl-1">
+                                    <div class="col-4 col-sm-3 col-md-2 col-xl-1">
                                         <div class="comment-avatar text-center">
                                             <img class="comment-avatar-img" height="49" width="49"
                                                  src="/{{ comment_children.getUser().getAvatarPath() }}" alt="">
                                         </div>
                                     </div>
-                                    <div class="col-4 col-sm-7 col-md-7 col-xl-9">
+                                    <div class="col-5 col-sm-6  col-md-7 col-xl-9">
                                         <div class="row">
                                             <div class="comment-username">
 
